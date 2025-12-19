@@ -86,6 +86,7 @@ $table_prefix = 'wp_';
  * @link https://developer.wordpress.org/advanced-administration/debug/debug-wordpress/
  */
 define( 'WP_DEBUG', false );
+define( 'WP_ENVIRONMENT_TYPE', 'local' );
 
 define('FS_METHOD','direct');
 

@@ -159,6 +159,13 @@ add_action('rest_api_init', function () {
     ));
 });
 
+// Enable CORS
+add_action( 'init', function() {
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
+    header("Access-Control-Allow-Headers: Authorization, Content-Type");
+});
+
 function react_theme_get_form($data) {
     if (!class_exists('GFAPI')) {
         return new WP_Error('gf_missing', 'Gravity Forms not active', array('status' => 500));
@@ -929,3 +936,26 @@ add_action( 'rest_api_init', function () {
 } );
 
 // --- REACT HEADLESS SETUP END ---
+
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'custom-api/v1', '/form/(?P<id>\d+)', array(
+        'methods' => 'GET',
+        'callback' => 'get_public_gf_form',
+        'permission_callback' => '__return_true',
+    ) );
+} );
+
+function get_public_gf_form( $data ) {
+    if ( ! class_exists( 'GFAPI' ) ) {
+        return new WP_Error( 'gf_missing', 'Gravity Forms not active', array( 'status' => 500 ) );
+    }
+
+    $form_id = $data['id'];
+    $form = GFAPI::get_form( $form_id );
+
+    if ( ! $form ) {
+        return new WP_Error( 'no_form', 'Form not found', array( 'status' => 404 ) );
+    }
+
+    return $form;
+}
